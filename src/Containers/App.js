@@ -9,20 +9,31 @@ class App extends Component {
     demoid:0,
     todos:[],
     current:'',
+
   })
+
+
+  newTodocreate=()=>{
+      const newTodo = [...this.state.todos];
+      const id = this.state.demoid+1;
+      const edit=false;
+      console.log(id)
+      newTodo.push({id:id,description:this.state.current,editable:edit});
+      this.setState({todos:newTodo,demoid:id});
+      this.setState({current:''})
+   }
 
   onInputHandler=(event)=>{
     const newTodo = event.target.value;
     this.setState({current:newTodo});
+    var enterkey=13
+    if(event.which===enterkey){
+         this.newTodocreate();
+    }
   }
 
   onAddHandler=()=>{
-    const newTodo = [...this.state.todos];
-    const id = this.state.demoid+1;
-    const edit=false;
-    console.log(id)
-    newTodo.push({id:id,description:this.state.current,editable:edit});
-    this.setState({todos:newTodo,demoid:id});
+    this.newTodocreate() 
   }
 
   onDeleteHandler=(index)=>{
@@ -32,13 +43,29 @@ class App extends Component {
     this.setState({todos:temp})
   }
 
-  onEditHandler=(id)=>{
-    console.log(id)
+indexfinder=(id)=>{
     const todoIndex = this.state.todos.findIndex( p => {
       return p.id === id;
     });
-
     const todo = {...this.state.todos[todoIndex]};
+    
+    return [todoIndex,todo];
+}
+
+
+  onClickHandler=(id)=>{
+    const datatobeused=this.indexfinder(id);
+    const todoIndex=datatobeused[0];
+    const todo=datatobeused[1];
+
+    this.setState({currentTodo:todo});
+    console.log(this.state.currentT)
+  }
+
+  onEditHandler=(id)=>{
+    const datatobeused=this.indexfinder(id);
+    const todoIndex=datatobeused[0];
+    const todo=datatobeused[1];
     todo.editable=true;
 
     const todos =[...this.state.todos];
@@ -49,12 +76,9 @@ class App extends Component {
   }
 
   onEditInputHandler=(event,id)=>{
-    console.log(id)
-    const todoIndex = this.state.todos.findIndex( p => {
-      return p.id === id;
-    });
-
-    const todo = {...this.state.todos[todoIndex]};
+    const datatobeused=this.indexfinder(id);
+    const todoIndex=datatobeused[0];
+    const todo=datatobeused[1];
     todo.description=event.target.value;
 
     const todos =[...this.state.todos];
@@ -66,14 +90,11 @@ class App extends Component {
 
   OnEnterHandler=(e,id)=>{
     var enterkey=13;
-    if(e.which==enterkey){
-      const todoIndex = this.state.todos.findIndex( p => {
-        return p.id === id;
-      });
-  
-      const todo = {...this.state.todos[todoIndex]};
+    if(e.which===enterkey){
+      const datatobeused=this.indexfinder(id);
+      const todoIndex=datatobeused[0];
+      const todo=datatobeused[1];
       todo.editable=false;
-  
       const todos =[...this.state.todos];
       todos[todoIndex]=todo;
   
@@ -85,12 +106,18 @@ class App extends Component {
    
   return (
     <div className="App">
-      <Todo onchange={(event)=>this.onInputHandler(event)} add={this.onAddHandler} />
+      <Todo onchange={(event)=>this.onInputHandler(event)} 
+      add={this.onAddHandler} 
+      current={this.state.current} />
+
       <Todos data={this.state.todos} 
       edit={this.onEditHandler} 
       editInput={this.onEditInputHandler}
       enter={this.OnEnterHandler}
-      delete={this.onDeleteHandler} />
+      delete={this.onDeleteHandler}
+      click={this.onClickHandler}
+      
+      />
     </div>
   );
 }

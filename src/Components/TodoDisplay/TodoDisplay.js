@@ -50,7 +50,7 @@ const TodDisplay = (props)=>{
    <CardHeader
    action={
      <IconButton aria-label="settings">
-       <MoreVertIcon />
+       <MoreVertIcon/>
      </IconButton>
    }
    title="Label Display"
